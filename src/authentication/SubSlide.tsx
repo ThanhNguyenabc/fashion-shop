@@ -1,6 +1,5 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import Animated from "react-native-reanimated";
 import { Button } from "../component";
 const { width } = Dimensions.get("window");
 
@@ -8,10 +7,9 @@ interface Props {
   subTitle: string;
   description: string;
   isLast?: boolean;
-  x: Animated.Node<number>;
   onPress: () => void;
 }
-const SubSlide = ({ subTitle, description, isLast, x, onPress }: Props) => {
+const SubSlide = ({ subTitle, description, isLast, onPress }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.subTitle}>{subTitle}</Text>

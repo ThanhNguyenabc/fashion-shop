@@ -1,20 +1,14 @@
+import { StackScreenProps } from "@react-navigation/stack";
 import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import Animated, {
-  divide,
-  interpolate,
-  interpolateColor,
-  multiply,
-  useSharedValue,
-  useValue,
-} from "react-native-reanimated";
-import { Dot } from "../component";
+import { View, StyleSheet, Dimensions } from "react-native";
+import Animated, { interpolateColor, multiply } from "react-native-reanimated";
+import { Dot, Theme } from "../component";
+import { slides } from "../mock_data/Slides";
+import { Routes } from "../navigation";
 import Slide, { SLIDE_HEIGHT } from "./Slide";
 import SubSlide from "./SubSlide";
 
-const { width, height } = Dimensions.get("window");
-const BORDER_RADIUS = 75;
+const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +18,7 @@ const styles = StyleSheet.create({
   slider: {
     height: SLIDE_HEIGHT,
     backgroundColor: "red",
-    borderBottomRightRadius: BORDER_RADIUS,
+    borderBottomRightRadius: Theme.borderRadius.xl,
   },
   footer: {
     flex: 1,
@@ -33,53 +27,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     flexDirection: "row",
-    borderTopLeftRadius: BORDER_RADIUS,
+    borderTopLeftRadius: Theme.borderRadius.xl,
   },
   pagination: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
-    height: BORDER_RADIUS,
+    height: Theme.borderRadius.xl,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
 });
 
-const slides = [
-  {
-    label: "Relaxed",
-    color: "#BFEAF5",
-    subTitle: "Find Your Outfits",
-    description:
-      "Confused about outfit? Don't worry! Find the best outfit here",
-  },
-  {
-    label: "Playful",
-    color: "#BEECC4",
-    subTitle: "Hear it First, Wear it First",
-    description:
-      "Hating the clothes in your wardrobe? Explore hundreds of outfit ideas",
-  },
-  {
-    label: "Excentric",
-    color: "#FFE4D9",
-    subTitle: "Your Style, Your Way",
-    description:
-      "Create your individual & unique style and look amazing everyday",
-  },
-  {
-    label: "Funky",
-    color: "#FFDADD",
-    subTitle: "Look Good, Feel Good",
-    description:
-      "Discover the latest trends in fashion and explore your personality",
-  },
-];
-const OnBoarding = () => {
+const OnBoarding = ({ navigation }: StackScreenProps<Routes, "Onboarding">) => {
   const [x, setX] = useState(0);
-  const scrollX = useSharedValue(x);
   const scroll = useRef<Animated.ScrollView>(null);
-  const onScroll = ({ nativeEvent }) => {
+  const onScroll = ({ nativeEvent }: any) => {
     const { x } = nativeEvent.contentOffset;
     setX(x);
   };
@@ -102,7 +65,13 @@ const OnBoarding = () => {
           onScroll={onScroll}
         >
           {slides.map((item, index) => {
-            return <Slide key={index} label={item.label} right={index % 2} />;
+            return (
+              <Slide
+                key={index}
+                label={item.label}
+                right={index % 2 != 0 ? true : false}
+              />
+            );
           })}
         </Animated.ScrollView>
       </Animated.View>
@@ -128,12 +97,17 @@ const OnBoarding = () => {
             ]}
           >
             {slides.map(({ subTitle, description }, index) => {
+              const isLast = index === slides.length - 1;
               return (
                 <SubSlide
                   key={index}
-                  {...{ subTitle, description }}
-                  isLast={index === slides.length - 1}
+                  {...{ subTitle, description, isLast }}
+                  isLast={isLast}
                   onPress={() => {
+                    if (isLast) {
+                      navigation?.navigate("Welcome");
+                      return;
+                    }
                     if (scroll.current) {
                       scroll.current.scrollTo({
                         x: width * (index + 1),

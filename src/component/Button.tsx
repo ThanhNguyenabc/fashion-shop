@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
@@ -9,8 +10,9 @@ interface Props {
 }
 
 const Button = ({ label, variant, onPress }: Props) => {
+  const { colors } = useTheme();
   const backgroundColor =
-    variant === "default" ? "rgba(12,13,52,0.05)" : "#2CB9B0";
+    variant === "default" ? colors.blacklight : colors.primary;
   return (
     <RectButton
       style={[styles.container, { backgroundColor }]}
